@@ -1,0 +1,306 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>FLUXO</title>
+<style>
+:root{--bg:#0f1115;--sf:#171a21;--sf2:#1e222b;--tx:#e8eaf0;--mu:#8b93a7;--bd:#2a2f3a;--ac:#6ea8fe;--ok:#4cc38a;--wa:#e5a94d;--er:#e5646b;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f5f8;--sf:#fff;--sf2:#eef0f5;--tx:#1b1f2a;--mu:#667085;--bd:#dfe3ea;--ac:#2f6fed;color-scheme:light}}
+:root[data-theme="light"]{--bg:#f4f5f8;--sf:#fff;--sf2:#eef0f5;--tx:#1b1f2a;--mu:#667085;--bd:#dfe3ea;--ac:#2f6fed;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+nav{position:fixed;inset:0 auto 0 0;width:196px;padding:20px 12px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:2px}
+nav h1{font-size:20px;letter-spacing:.25em;margin:0 8px 16px}nav a{padding:9px 12px;border-radius:8px;color:var(--mu);cursor:pointer}nav a.on{background:var(--sf2);color:var(--tx)}
+main{margin-left:196px;padding:24px;max-width:1100px}h2{margin:0 0 14px;font-size:22px}h3{margin:0 0 10px;font-size:16px}
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}.warn{border-color:var(--wa)}
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.g>.c{margin:0}.q{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.sp{flex:1}.mu{color:var(--mu)}.er{color:var(--er);margin:6px 0}
+button,input,select,textarea{font:inherit;color:var(--tx)}button{cursor:pointer;border-radius:8px;border:1px solid var(--bd);background:var(--sf2);padding:8px 12px}
+.b{background:var(--ac);color:#0b1020;border:0;font-weight:600}.s{padding:3px 8px;font-size:13px}
+input,select,textarea{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;max-width:100%}
+.bar{height:10px;background:var(--sf2);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.it{border-left:3px solid var(--k);padding:7px 10px;margin:6px 0;background:var(--sf2);border-radius:0 8px 8px 0;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.bd{font-size:11px;padding:1px 7px;border-radius:10px;border:1px solid var(--bd);color:var(--mu);margin-right:4px}
+.big{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums}.n{font-size:22px;font-weight:700}.ck{display:flex;gap:8px;align-items:center}
+dialog{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:14px;width:min(440px,92vw);max-height:90vh;overflow:auto}dialog::backdrop{background:#0008}
+dialog label{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}dialog label.ck{flex-direction:row}
+.ch{width:100%;height:auto}.ov{overflow-x:auto}table{border-collapse:collapse;width:100%}td,th{padding:6px;border-bottom:1px solid var(--bd);text-align:left;font-size:14px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--sf2);border:1px solid var(--bd);padding:8px 14px;border-radius:10px;display:none;z-index:9}#toast.show{display:block}
+@media(max-width:800px){nav{inset:auto 0 0 0;width:auto;flex-direction:row;overflow-x:auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--bd)}nav h1{display:none}nav a{white-space:nowrap}main{margin:0;padding:16px 14px 84px}.big{font-size:36px}}
+
+#authscreen{position:fixed;inset:0;z-index:30;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
+#authscreen .authbox{width:min(420px,100%);background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:24px}
+#authscreen input{width:100%;margin:5px 0 12px}
+#authscreen button{width:100%;margin-top:8px}
+#authmsg{min-height:22px;color:var(--wa);font-size:13px}
+</style></head><body><nav></nav><main></main><dialog id="dlg"></dialog><section id="authscreen"><div class="authbox"><h1 style="letter-spacing:.2em">FLUXO</h1><p class="mu">Entre para acessar sua agenda sincronizada na nuvem.</p><form id="authform"><label>E-mail<input id="authemail" type="email" autocomplete="email" required placeholder="seu@email.com"></label><label>Senha<input id="authpass" type="password" autocomplete="current-password" minlength="6" required placeholder="Mínimo de 6 caracteres"></label><div id="authmsg"></div><button class="b" id="loginbtn" type="submit">Entrar</button><button type="button" id="signupbtn">Criar conta</button><button type="button" id="resetbtn">Esqueci minha senha</button></form><p class="mu" style="font-size:12px;margin-top:14px">Seus dados ficam associados à sua conta. Use sempre o mesmo e-mail para acessar de outros dispositivos.</p></div></section><div id="toast"></div><div id="ld" style="display:none;position:fixed;inset:0;background:var(--bg);color:var(--mu);z-index:20;align-items:center;justify-content:center">Carregando seus dados…</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const TZ='America/Sao_Paulo',KEY='fluxo.v1',$=s=>document.querySelector(s),A={},V={};
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const blank=()=>({days:{},tasks:[],projects:[],sessions:[],weeks:{},set:{goal:600,sleep:'22:30',maxDay:180},timer:null});
+let okStore=true,D=(()=>{try{const r=localStorage.getItem(KEY);if(r)return Object.assign(blank(),JSON.parse(r))}catch(e){okStore=false}return blank()})();
+function save(){D.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){okStore=false;if(!DB)toast('Não foi possível salvar neste navegador.')}sched()}
+function toast(t){const e=$('#toast');e.textContent=t;e.className='show';clearTimeout(toast.h);toast.h=setTimeout(()=>e.className='',4000)}
+function ask(msg,fn){const d=$('#dlg');d.innerHTML=`<form><p style="white-space:pre-wrap">${E(msg)}</p><div class="row"><span class="sp"></span><button type="button" data-x="c">Cancelar</button><button type="button" class="b" data-x="y">Confirmar</button></div></form>`;d.querySelector('form').onclick=ev=>{const x=ev.target.dataset.x;if(x==='c')d.close();if(x==='y'){d.close();fn();save();render()}};d.showModal()}
+const parts=(d=new Date())=>{const o={};new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d).forEach(p=>o[p.type]=p.value);return o};
+const today=()=>{const p=parts();return`${p.year}-${p.month}-${p.day}`},nowMin=()=>{const p=parts();return+p.hour*60+ +p.minute};
+const dOf=ts=>{const p=parts(new Date(ts));return`${p.year}-${p.month}-${p.day}`},tOf=ts=>{const p=parts(new Date(ts));return p.hour+':'+p.minute};
+const toTs=(d,t)=>new Date(d+'T'+t+':00-03:00').getTime();
+const m=t=>{const[a,b]=t.split(':');return+a*60+ +b},hm=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+const fh=n=>{n=Math.round(n);const h=Math.floor(n/60),r=n%60;return h?h+'h'+(r?String(r).padStart(2,'0'):''):r+'min'};
+const addD=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)},dow=s=>new Date(s+'T12:00:00Z').getUTCDay(),mon=s=>addD(s,-((dow(s)+6)%7));
+const WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],fd=s=>`${WD[dow(s)]}, ${s.slice(8)}/${s.slice(5,7)}`,ov=(a,b,c,d)=>a<d&&c<b;
+const ST=['Não iniciada','Em andamento','Concluída','Adiada','Cancelada'],PR=[['P1','P1 — Essencial'],['P2','P2 — Importante'],['P3','P3 — Opcional']],CT=['Trabalho','Estudo','Atividade extra','Pessoal','Outros'],FX=['Não pode ser adiada','Pode mudar de dia','Pode mudar de semana','Pode ser cancelada'],EN=['Baixa','Média','Alta'],PS=['Planejamento','Em andamento','Concluído','Arquivado'];
+const KC={study:'#9b8cff',work:'#e5a94d',un:'#e5646b',free:'#4cc38a',task:'#6ea8fe',sess:'#2dd4bf',sleep:'#8b93a7'};
+const act=t=>!t.arch&&t.status!=='Concluída'&&t.status!=='Cancelada',pj=id=>D.projects.find(p=>p.id===id),tk=id=>D.tasks.find(t=>t.id===id);
+const sumMin=f=>D.sessions.filter(f).reduce((a,s)=>a+s.min,0),wkMin=mo=>sumMin(s=>s.d>=mo&&s.d<=addD(mo,6)),wkGoal=mo=>(D.weeks[mo]||{}).goal??D.set.goal;
+const wkDone=mo=>D.tasks.filter(t=>t.done&&t.done>=mo&&t.done<=addD(mo,6)).length,pName=id=>pj(id)?pj(id).name:'(sem projeto)';
+const ensureWeek=()=>{const w=mon(today());if(!D.weeks[w])D.weeks[w]={goal:D.set.goal}};
+const nDays=(a,b)=>Math.round((new Date(b+'T12:00:00Z')-new Date(a+'T12:00:00Z'))/864e5)+1,weeksOf=n=>Math.max(1,Math.round(n/7));
+const evenAlloc=t=>{const N=nDays(t.ps,t.pe),b=Math.floor(t.dur/N),r=t.dur-b*N,a={};for(let i=0;i<N;i++)a[addD(t.ps,i)]={m:b+(i<r?1:0),s:''};return a};
+const fitCh=date=>D.tasks.filter(t=>t.fit&&act(t)&&t.alloc&&t.alloc[date]&&t.alloc[date].m>0).map(t=>({t,a:t.alloc[date]}));
+const dayTasks=d=>D.tasks.filter(t=>act(t)&&!t.fit&&t.date===d).map(t=>`<div class="it" style="--k:${KC.task}"><span>${E(t.name)}<br><span class="mu">${t.start?t.start+'–'+hm(m(t.start)+t.dur):'sem horário'} · ${fh(t.dur)}</span></span></div>`).join('')+fitCh(d).map(c=>`<div class="it" style="--k:${KC.task}"><span>${E(c.t.name)}<br><span class="mu">${fh(c.a.m)}${c.a.s?' · '+c.a.s+'–'+hm(m(c.a.s)+c.a.m):' · sem horário'}</span></span><button class="s" data-a="ch" data-i="${c.t.id}" data-j="${d}">Ajustar</button></div>`).join('');
+const bk=d=>{const r=[];if(!d)return r;if(d.aula&&d.st)r.push({s:m(d.st[0]),e:m(d.st[1]),k:'study',l:'Estudos'});if(d.wm)r.push({s:m(d.wmT[0]),e:m(d.wmT[1]),k:'work',l:'Trabalho (manhã)'});if(d.wa)r.push({s:m(d.waT[0]),e:m(d.waT[1]),k:'work',l:'Trabalho (tarde)'});return r},blocks=date=>bk(D.days[date]);
+function free(date,xtra=[],skip=new Set()){const d=D.days[date];if(!d)return[];const sl=m(D.set.sleep);
+ let w=(d.av||[]).map(a=>[m(a[0]),Math.min(m(a[1]),sl)]).filter(a=>a[1]>a[0]);
+ const busy=[...blocks(date).map(b=>[b.s,b.e]),...(d.un||[]).map(u=>[m(u.s),m(u.e)]),...D.tasks.filter(t=>t.date===date&&t.start&&!skip.has(t.id)&&act(t)).map(t=>[m(t.start),m(t.start)+t.dur]),...fitCh(date).filter(c=>c.a.s&&!skip.has(c.t.id)).map(c=>[m(c.a.s),m(c.a.s)+c.a.m]),...xtra];
+ for(const[bs,be]of busy)w=w.flatMap(([s,e])=>be<=s||bs>=e?[[s,e]]:[[s,bs],[be,e]].filter(x=>x[1]>x[0]));return w.sort((a,b)=>a[0]-b[0])}
+const fw=(d,tk_,sk)=>free(d,tk_,sk).map(([s,e])=>d===today()?[Math.max(s,Math.ceil((nowMin()+10)/15)*15),e]:[s,e]).filter(w=>w[1]>w[0]);
+function conflict(t){if(!t.date||!t.start)return'';const s=m(t.start),e=s+t.dur,d=D.days[t.date];if(e>m(D.set.sleep))return`Termina depois do horário de dormir (${D.set.sleep}).`;if(!d)return'Dia sem disponibilidade definida.';
+ for(const b of blocks(t.date))if(ov(s,e,b.s,b.e))return`Conflita com ${b.l} (${hm(b.s)}–${hm(b.e)}).`;
+ for(const u of d.un||[])if(ov(s,e,m(u.s),m(u.e)))return`Conflita com indisponibilidade (${u.s}–${u.e}).`;
+ for(const o of D.tasks)if(o.id!==t.id&&act(o)&&o.date===t.date&&o.start&&ov(s,e,m(o.start),m(o.start)+o.dur))return`Conflita com "${o.name}".`;
+ for(const c of fitCh(t.date))if(c.t.id!==t.id&&c.a.s&&ov(s,e,m(c.a.s),m(c.a.s)+c.a.m))return`Conflita com "${c.t.name}".`;return(d.av||[]).some(a=>s>=m(a[0])&&e<=m(a[1]))?'':'Fora da disponibilidade confirmada.'}
+function alts(t){const r=[],sk=new Set([t.id]);for(let i=0;i<14&&r.length<3;i++){const d=addD(today(),i);for(const w of fw(d,[],sk))if(w[1]-w[0]>=t.dur&&r.length<3)r.push(`${fd(d)} às ${hm(w[0])}`)}return r.length?r:['nenhum horário livre confirmado nos próximos 14 dias']}
+/* timer */
+const tMs=(t=D.timer)=>t?(t.pa||Date.now())-t.s-t.pm:0,clock=ms=>{const s=Math.floor(Math.max(0,ms)/1000);return[s/3600|0,s%3600/60|0,s%60].map(x=>String(x).padStart(2,'0')).join(':')};
+const stale=()=>D.timer&&(Date.now()-D.timer.s>12*36e5||dOf(D.timer.s)!==today());
+function addSess(s,e,ms,task,proj,fix){const min=ms>=3e4?Math.max(1,Math.round(ms/6e4)):0;if(!min){toast('Sessão menor que 30s descartada.');return}D.sessions.push({id:uid(),s,e,min,d:dOf(s),task,proj,fix})}
+setInterval(()=>{if(D.timer){const c=clock(tMs());document.querySelectorAll('.tclock').forEach(e=>e.textContent=c)}},1000);
+/* forms */
+const inp=f=>f.t==='select'?`<select name="${f.k}">`+f.o.map(o=>{const[v,l]=Array.isArray(o)?o:[o,o];return`<option value="${E(v)}"${v==f.v?' selected':''}>${E(l)}</option>`}).join('')+'</select>':f.t==='textarea'?`<textarea name="${f.k}" rows="2">${E(f.v)}</textarea>`:f.t==='checkbox'?`<input type="checkbox" name="${f.k}"${f.v?' checked':''}>`:`<input type="${f.t||'text'}" name="${f.k}" value="${E(f.v)}"${f.r?' required':''}${f.t==='number'?' step="any" min="0"':''}>`;
+function form(title,fs,ok,del){const d=$('#dlg');d.innerHTML=`<form><h3>${title}</h3>${fs.map(f=>`<label class="${f.t==='checkbox'?'ck':''}"><span>${f.l}</span>${inp(f)}</label>`).join('')}<p class="er"></p><div class="row">${del?'<button type="button" data-x="del">Excluir</button>':''}<span class="sp"></span><button type="button" data-x="c">Cancelar</button><button class="b">Salvar</button></div></form>`;
+ const fm=d.querySelector('form');fm.onsubmit=ev=>{ev.preventDefault();const fd_=new FormData(fm),o={};fs.forEach(f=>o[f.k]=f.t==='checkbox'?fd_.has(f.k):f.t==='number'?(fd_.get(f.k)===''?'':+fd_.get(f.k)):fd_.get(f.k));const er=ok(o);if(er){fm.querySelector('.er').textContent=er;return}d.close();save();render()};
+ fm.onclick=ev=>{const x=ev.target.dataset.x;if(x==='c')d.close();if(x==='del'){d.close();del()}};d.showModal()}
+/* charts */
+function bars(it,goal){if(!it.some(i=>i.v>0))return'<p class="mu">Sem sessões registradas neste período.</p>';const W=560,H=140,mx=Math.max(...it.map(i=>i.v),goal||0),bw=W/it.length;
+ return`<svg viewBox="0 0 ${W} ${H+20}" class="ch">`+it.map((i,k)=>{const h=i.v/mx*H;return`<rect x="${k*bw+bw*.15}" y="${H-h}" width="${bw*.7}" height="${h}" rx="3" fill="var(--ac)"><title>${i.l}: ${fh(i.v)}</title></rect><text x="${k*bw+bw/2}" y="${H+14}" text-anchor="middle" font-size="10" fill="var(--mu)">${i.l}</text>`}).join('')+(goal?`<line x1="0" x2="${W}" y1="${H-goal/mx*H}" y2="${H-goal/mx*H}" stroke="var(--wa)" stroke-dasharray="4"/>`:'')+'</svg>'}
+const prog=(p,g)=>`<div class="bar"><i style="width:${Math.min(100,g?p/g*100:0)}%"></i></div>`;
+/* state */
+const NAV=[['visao','Visão geral'],['rotina','Rotina'],['tarefas','Tarefas'],['projetos','Projetos'],['cronometro','Cronômetro'],['planejador','Planejador'],['reorganizar','Reorganizar'],['desempenho','Meu desempenho'],['historico','Histórico']];
+let view='visao',wk=mon(today()),PRJ=null,FL={proj:'',pri:'',st:'Abertas',date:''},P=null,R={date:today(),s:'',e:'',n:'',res:null};
+function render(){ensureWeek();$('nav').innerHTML='<h1>FLUXO</h1>'+NAV.map(n=>`<a data-a="go" data-i="${n[0]}" class="${n[0]===view?'on':''}">${n[1]}</a>`).join('')+'<a data-a="theme">◐ Tema</a><span id="sy" class="mu" style="padding:9px 12px;font-size:12px">'+SYT[SY]+'</span>';$('main').innerHTML=(okStore||DB?'':'<div class="c warn">Armazenamento indisponível: os dados não serão salvos.</div>')+V[view]()}
+A.go=i=>{view=i;PRJ=null;if(location.hash==='#'+i)render();else location.hash=i};
+A.theme=()=>{const r=document.documentElement,l=getComputedStyle(r).colorScheme.includes('light');r.dataset.theme=l?'dark':'light'};
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);view=NAV.some(n=>n[0]===h)?h:'visao';render()});
+document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a&&A[a.dataset.a]){e.preventDefault();A[a.dataset.a](a.dataset.i,a,a.dataset.j)}});
+document.addEventListener('change',e=>{const f=e.target.dataset.f;if(f){FL[f]=e.target.value;render()}});
+/* day items */
+function dayItems(date){const d=D.days[date];if(!d)return null;const r=[];bk(d).forEach(b=>r.push(b));(d.un||[]).forEach(u=>r.push({s:m(u.s),e:m(u.e),l:'Indisponível'+(u.n?': '+u.n:''),k:'un'}));free(date).forEach(w=>r.push({s:w[0],e:w[1],l:'Livre confirmado',k:'free'}));
+ D.tasks.filter(t=>act(t)&&t.date===date&&t.start).forEach(t=>r.push({s:m(t.start),e:m(t.start)+t.dur,l:t.name,k:'task'}));fitCh(date).filter(c=>c.a.s).forEach(c=>r.push({s:m(c.a.s),e:m(c.a.s)+c.a.m,l:c.t.name,k:'task'}));
+ D.sessions.filter(s=>s.d===date).forEach(s=>{const a=m(tOf(s.s));r.push({s:a,e:a+s.min,l:'Produção registrada · '+fh(s.min),k:'sess'})});r.push({s:m(D.set.sleep),e:m(D.set.sleep),l:'Dormir',k:'sleep'});return r.sort((a,b)=>a.s-b.s||a.e-b.e)}
+const itHtml=i=>`<div class="it" style="--k:${KC[i.k]}"><span>${E(i.l)}</span><span class="mu">${i.s===i.e?hm(i.s):hm(i.s)+'–'+hm(i.e)}</span></div>`;
+const taskLine=t=>`<div class="it" style="--k:${KC.task}"><label class="ck"><input type="checkbox" data-a="tdone" data-i="${t.id}"> ${E(t.name)}</label><span class="mu">${fh(t.dur)} · ${t.pri}</span></div>`;
+const recov=()=>D.tasks.filter(t=>act(t)&&t.kept!==today()&&((t.due&&t.due<today())||(t.date&&t.date<today())));
+/* HOME */
+V.visao=()=>{const t0=today(),mo=mon(t0),g=wkGoal(mo),p=wkMin(mo),el=(dow(t0)+6)%7+1,items=dayItems(t0),rc=recov(),dt=D.tasks.filter(t=>act(t)&&!t.fit&&(t.date===t0||t.due===t0)),nowM=nowMin();
+ const nx=D.tasks.filter(t=>act(t)&&t.start&&(t.date>t0||t.date===t0&&m(t.start)>=nowM)).sort((a,b)=>(a.date+a.start<b.date+b.start?-1:1)).slice(0,5),
+ occ=items?items.filter(i=>['study','work','un'].includes(i.k)).reduce((a,i)=>a+i.e-i.s,0):0,fr=items?items.filter(i=>i.k==='free').reduce((a,i)=>a+i.e-i.s,0):0;
+ return`<h2>${new Intl.DateTimeFormat('pt-BR',{timeZone:TZ,weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date())}</h2>${stale()?`<div class="c warn">Sessão de produção possivelmente esquecida (iniciada em ${fd(dOf(D.timer.s))} às ${tOf(D.timer.s)}). <button data-a="fx">Corrigir término</button></div>`:''}
+ ${rc.length?`<div class="c warn">${rc.length} tarefa(s) na <a data-a="go" data-i="tarefas" style="color:var(--ac);cursor:pointer">Fila de recuperação</a>.</div>`:''}
+ <div class="g q" style="margin-bottom:14px"><button data-a="nt">+ Nova tarefa</button><button data-a="np">+ Novo projeto</button><button data-a="edd" data-i="${t0}">Alterar minha rotina</button>${D.timer?'<button class="b" data-a="tf">Finalizar produção</button>':'<button class="b" data-a="ts">Iniciar produção</button>'}<button data-a="ru">Registrar indisponibilidade</button><button data-a="go" data-i="reorganizar">Reorganizar minha semana</button><button data-a="go" data-i="desempenho">Ver desempenho</button><button data-a="go" data-i="historico">Consultar histórico</button></div>
+ <div class="g"><div class="c"><h3>Meta semanal</h3><div class="n">${fh(p)} / ${fh(g)}</div>${prog(p,g)}<p class="mu">Restante: ${fh(Math.max(0,g-p))} · Progresso: ${g?Math.round(p/g*100):0}% · Média diária: ${fh(p/el)}</p><p class="mu">Tarefas concluídas na semana: ${wkDone(mo)} · Total histórico: ${fh(sumMin(()=>1))}</p></div>
+ <div class="c"><h3>Projetos em andamento</h3>${D.projects.filter(x=>x.st==='Em andamento').map(x=>`<div class="it" style="--k:${KC.task}"><a data-a="opj" data-i="${x.id}" style="cursor:pointer">${E(x.name)}</a><span class="mu">${fh(sumMin(s=>s.proj===x.id))}</span></div>`).join('')||'<p class="mu">Nenhum projeto em andamento.</p>'}</div>
+ <div class="c"><h3>Próximas atividades</h3>${nx.map(t=>`<div class="it" style="--k:${KC.task}"><span>${E(t.name)}</span><span class="mu">${fd(t.date)} ${t.start}</span></div>`).join('')||'<p class="mu">Nada agendado.</p>'}</div></div>
+ <div class="g" style="margin-top:14px"><div class="c"><h3>Meu dia</h3>${items?`<p class="mu">Ocupado: ${fh(occ)} · Livre confirmado: ${fh(fr)}</p>`+items.map(itHtml).join(''):'<p class="mu">Dia não configurado — nenhum horário é presumido.</p><button data-a="edd" data-i="'+t0+'">Definir hoje</button>'}</div>
+ <div class="c"><h3>Tarefas do dia</h3>${dt.map(taskLine).join('')+fitCh(t0).map(c=>`<div class="it" style="--k:${KC.task}"><span>${E(c.t.name)}</span><span class="mu">${fh(c.a.m)} hoje${c.a.s?' às '+c.a.s:''}</span></div>`).join('')||'<p class="mu">Sem tarefas para hoje.</p>'}</div></div>`};
+/* ROTINA */
+A.wk=i=>{wk=addD(wk,+i);render()};
+V.rotina=()=>{const ds=[...Array(7)].map((_,i)=>addD(wk,i));return`<h2>Rotina e disponibilidade</h2><div class="row"><button data-a="wk" data-i="-7">←</button><b>${fd(wk)} – ${fd(addD(wk,6))}</b><button data-a="wk" data-i="7">→</button><span class="sp"></span><button data-a="habit">Aplicar rotina habitual</button></div><p class="mu">Dias "não definidos" não têm disponibilidade presumida. Disponibilidade extra só existe quando você informa.</p>${fitPanel()}<div class="g">${ds.map(d=>{const c=D.days[d];return`<div class="c"><b>${fd(d)}</b>${d===today()?' <span class="bd">hoje</span>':''}${c?`${bk(c).map(b=>`<div class="it" style="--k:${KC[b.k]}"><span>${b.l}</span><span class="mu">${hm(b.s)}–${hm(b.e)}</span></div>`).join('')||'<p class="mu">Sem compromissos fixos.</p>'}
+ ${(c.av||[]).map((a,i)=>`<div class="it" style="--k:${KC.free}"><span>Livre ${a[0]}–${a[1]}</span><span><button class="s" data-a="eav" data-i="${d}" data-j="${i}">✎</button> <button class="s" data-a="dav" data-i="${d}" data-j="${i}">✕</button></span></div>`).join('')}
+ ${(c.un||[]).map((u,i)=>`<div class="it" style="--k:${KC.un}"><span>Indisp. ${u.s}–${u.e} ${E(u.n)}</span><span><button class="s" data-a="eun" data-i="${d}" data-j="${i}">✎</button> <button class="s" data-a="dun" data-i="${d}" data-j="${i}">✕</button></span></div>`).join('')}${dayTasks(d)}${c.note?`<p class="mu">${E(c.note)}</p>`:''}
+ <div class="row"><button class="s" data-a="edd" data-i="${d}">Editar</button><button class="s" data-a="eav" data-i="${d}" data-j="-1">+ Livre</button><button class="s" data-a="eun" data-i="${d}" data-j="-1">+ Indisp.</button><button class="s" data-a="atk" data-i="${d}">+ Tarefa</button><button class="s" data-a="cp" data-i="${d}">Copiar</button><button class="s" data-a="dd" data-i="${d}">Limpar</button></div>`:`<p class="mu">Não definido</p>${dayTasks(d)}<button class="s" data-a="edd" data-i="${d}">Definir</button> <button class="s" data-a="atk" data-i="${d}">+ Tarefa</button>`}</div>`}).join('')}</div>`};
+A.edd=date=>{const d=D.days[date]||{};form(`Rotina — ${fd(date)}`,[{k:'aula',l:'Tenho aula?',t:'checkbox',v:d.aula},{k:'s1',l:'Estudo — início',t:'time',v:d.st?d.st[0]:'07:45'},{k:'e1',l:'Estudo — fim',t:'time',v:d.st?d.st[1]:'12:30'},{k:'wm',l:'Trabalho pela manhã?',t:'checkbox',v:d.wm},{k:'s2',l:'Manhã — início',t:'time',v:d.wmT?d.wmT[0]:'08:00'},{k:'e2',l:'Manhã — fim',t:'time',v:d.wmT?d.wmT[1]:'12:00'},{k:'wa',l:'Trabalho à tarde?',t:'checkbox',v:d.wa},{k:'s3',l:'Tarde — início',t:'time',v:d.waT?d.waT[0]:'13:30'},{k:'e3',l:'Tarde — fim',t:'time',v:d.waT?d.waT[1]:'18:00'},{k:'note',l:'Observações',t:'textarea',v:d.note}],o=>{
+ const L=[];if(o.aula)L.push([o.s1,o.e1,'Estudo']);if(o.wm)L.push([o.s2,o.e2,'Trabalho (manhã)']);if(o.wa)L.push([o.s3,o.e3,'Trabalho (tarde)']);
+ for(const[a,b,n]of L)if(!a||!b||m(b)<=m(a))return`${n}: o término deve ser depois do início.`;
+ for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++)if(ov(m(L[i][0]),m(L[i][1]),m(L[j][0]),m(L[j][1])))return`Conflito: ${L[i][2]} e ${L[j][2]} se sobrepõem.`;
+ const nd=Object.assign({},d,{aula:o.aula,st:[o.s1,o.e1],wm:o.wm,wmT:[o.s2,o.e2],wa:o.wa,waT:[o.s3,o.e3],note:o.note,av:d.av||[],un:d.un||[]});
+ for(const a of nd.av)for(const b of bk(nd))if(ov(m(a[0]),m(a[1]),b.s,b.e))return`A disponibilidade ${a[0]}–${a[1]} conflita com ${b.l}. Ajuste ou remova a janela livre antes.`;D.days[date]=nd},D.days[date]?()=>A.dd(date):null)};
+A.dd=date=>ask('Remover a configuração deste dia?',()=>{delete D.days[date]});
+A.eav=(date,i)=>{i=+i;const d=D.days[date]||{av:[],un:[]},a=i>=0?d.av[i]:['19:00','20:00'];form(i>=0?'Editar disponibilidade':'Disponibilidade extra confirmada',[{k:'s',l:'Início',t:'time',v:a[0]},{k:'e',l:'Fim',t:'time',v:a[1]}],o=>{
+ if(!o.s||!o.e||m(o.e)<=m(o.s))return'O fim deve ser depois do início.';if(m(o.e)>m(D.set.sleep))return`Passa do horário de dormir (${D.set.sleep}).`;
+ for(const b of bk(D.days[date]))if(ov(m(o.s),m(o.e),b.s,b.e))return`Conflita com ${b.l} (${hm(b.s)}–${hm(b.e)}). Sugestão: informe a janela a partir de ${hm(b.e)}.`;
+ const nd=D.days[date]||(D.days[date]={aula:false,wm:false,wa:false,av:[],un:[]});nd.av=nd.av||[];if(i>=0)nd.av[i]=[o.s,o.e];else nd.av.push([o.s,o.e])},i>=0?()=>A.dav(date,i):null)};
+A.dav=(date,i)=>{D.days[date].av.splice(+i,1);save();render()};
+A.eun=(date,i)=>{i=+i;const u=i>=0?D.days[date].un[i]:{s:'',e:'',n:''};form(i>=0?'Editar indisponibilidade':'Indisponibilidade excepcional',[{k:'s',l:'Início',t:'time',v:u.s,r:1},{k:'e',l:'Fim',t:'time',v:u.e,r:1},{k:'n',l:'Motivo',v:u.n}],o=>{if(!o.s||!o.e||m(o.e)<=m(o.s))return'O fim deve ser depois do início.';const nd=D.days[date]||(D.days[date]={aula:false,wm:false,wa:false,av:[],un:[]});nd.un=nd.un||[];const n={s:o.s,e:o.e,n:o.n};if(i>=0)nd.un[i]=n;else nd.un.push(n);const x=D.tasks.filter(t=>act(t)&&t.date===date&&t.start&&ov(m(o.s),m(o.e),m(t.start),m(t.start)+t.dur));if(x.length)toast(x.length+' tarefa(s) afetada(s): use "Reorganizar".')})};
+A.dun=(date,i)=>{D.days[date].un.splice(+i,1);save();render()};
+A.ru=()=>{const t=today();form('Registrar indisponibilidade',[{k:'d',l:'Data',t:'date',v:t,r:1},{k:'s',l:'Início',t:'time',r:1},{k:'e',l:'Fim',t:'time',r:1},{k:'n',l:'Motivo'}],o=>{if(!o.d||!o.s||!o.e||m(o.e)<=m(o.s))return'Informe data e um intervalo válido.';const nd=D.days[o.d]||(D.days[o.d]={aula:false,wm:false,wa:false,av:[],un:[]});(nd.un=nd.un||[]).push({s:o.s,e:o.e,n:o.n});const x=D.tasks.filter(t=>act(t)&&t.date===o.d&&t.start&&ov(m(o.s),m(o.e),m(t.start),m(t.start)+t.dur));if(x.length)toast(x.length+' tarefa(s) afetada(s): use "Reorganizar minha semana".')})};
+A.cp=date=>{const ds=[...Array(7)].map((_,i)=>addD(mon(date),i)).filter(x=>x!==date);form('Copiar configuração',[...ds.map(x=>({k:'d'+x,l:fd(x)+(D.days[x]?' (substitui)':''),t:'checkbox'})),{k:'r4',l:'Repetir nas 4 próximas semanas (mesmo dia)',t:'checkbox'}],o=>{const T=ds.filter(x=>o['d'+x]);if(o.r4)[7,14,21,28].forEach(n=>T.push(addD(date,n)));if(!T.length)return'Selecione ao menos um dia.';T.forEach(x=>{const c=JSON.parse(JSON.stringify(D.days[date]));c.un=[];c.note='';D.days[x]=c})})};
+A.habit=()=>ask('Cria trabalho 13:30–18:00 (sem aula marcada e sem disponibilidade extra) nos dias úteis ainda não definidos desta semana. Continuar?',A.hab2);A.hab2=()=>{[...Array(5)].forEach((_,i)=>{const d=addD(wk,i);if(!D.days[d])D.days[d]={aula:false,st:['07:45','12:30'],wm:false,wmT:['08:00','12:00'],wa:true,waT:['13:30','18:00'],av:[],un:[],note:''}});save();render()};
+/* ENCAIXE */
+const fitPanel=()=>{const w1=addD(wk,6),ts=D.tasks.filter(t=>t.fit&&act(t)&&Object.keys(t.alloc||{}).some(d=>d>=wk&&d<=w1));return ts.length?`<div class="c"><h3>Tarefas encaixadas — metas</h3>${ts.map(t=>{const al=t.alloc||{},tot=Object.values(al).reduce((a,x)=>a+x.m,0),ws=Object.entries(al).filter(([d])=>d>=wk&&d<=w1).reduce((a,[,x])=>a+x.m,0),tg=t.ps&&t.pe&&t.wh?t.wh*weeksOf(nDays(t.ps,t.pe)):0;return`<div class="it" style="--k:${KC.task}"><span>${E(t.name)}<br><span class="mu">Semana: ${fh(ws)} · Alocado ${fh(tot)}${tg?' de '+fh(tg)+(tot===tg?' ✓':tot<tg?' — faltam '+fh(tg-tot):' — sobram '+fh(tot-tg)):''} · Produzido ${fh(sumMin(s=>s.task===t.id))}</span></span><span><button class="s" data-a="dist" data-i="${t.id}">Distribuir</button> <button class="s" data-a="fita" data-i="${t.id}">Encaixar horários</button></span></div>`}).join('')}</div>`:''};
+A.dist=id=>{const t=tk(id),al=t.alloc||(t.alloc={}),ds=t.ps&&t.pe?[...Array(nDays(t.ps,t.pe))].map((_,i)=>addD(t.ps,i)):Object.keys(al).sort(),tg=t.ps&&t.pe&&t.wh?t.wh*weeksOf(nDays(t.ps,t.pe)):0;
+ form('Distribuir horas — '+t.name,ds.map(d=>({k:'h'+d,l:fd(d)+(D.days[d]?'':' · dia não definido'),t:'number',v:al[d]?+(al[d].m/60).toFixed(2):0})),o=>{const na={};let sum=0;ds.forEach(d=>{const x=Math.round((o['h'+d]||0)*60);sum+=x;if(x>0)na[d]={m:x,s:al[d]&&al[d].m===x?al[d].s:''}});const k='dist'+id+sum;if(tg&&sum!==tg&&A.w!==k){A.w=k;return`Soma ${fh(sum)} ≠ meta ${fh(tg)} (${sum<tg?'faltam ':'sobram '}${fh(Math.abs(tg-sum))}). Clique em Salvar novamente para manter assim.`}t.alloc=na;t.dur=Math.max(1,sum)})};
+A.atk=date=>{form('Adicionar tarefa a '+fd(date),[{k:'t',l:'Tarefa',t:'select',o:D.tasks.filter(act).map(t=>[t.id,t.name])},{k:'h',l:'Horas neste dia',t:'number',v:1}],o=>{const t=tk(o.t),mn=Math.round((o.h||0)*60);if(!t)return'Crie uma tarefa antes.';if(mn<1)return'Informe as horas do dia.';t.fit=true;t.start='';t.alloc=t.alloc||{};t.alloc[date]={m:mn,s:''};if(!t.ps)t.dur=Object.values(t.alloc).reduce((a,x)=>a+x.m,0)})};
+A.ch=(id,date)=>{const t=tk(id),a=t.alloc[date];form(`${t.name} — ${fd(date)}`,[{k:'h',l:'Horas neste dia (0 remove)',t:'number',v:+(a.m/60).toFixed(2)},{k:'s',l:'Horário (opcional)',t:'time',v:a.s}],o=>{const mn=Math.round((o.h||0)*60);if(mn<=0){delete t.alloc[date];return}if(o.s){const n=Object.assign({},t,{date,start:o.s,dur:mn}),c=conflict(n),k=c+date+o.s+mn;if(c&&A.w!==k){A.w=k;return c+' Alternativas: '+alts(n).join('; ')+'. Para manter, clique em Salvar novamente.'}}t.alloc[date]={m:mn,s:o.s||''};if(!t.ps)t.dur=Math.max(1,Object.values(t.alloc).reduce((x,y)=>x+y.m,0))})};
+A.fita=id=>{const t=tk(id),t0=today(),tak={},pr=[],no=[];Object.entries(t.alloc||{}).filter(([d,a])=>d>=t0&&a.m>0&&!a.s).sort().forEach(([d,a])=>{const w=fw(d,tak[d]||[],new Set([id])).find(x=>x[1]-x[0]>=a.m);if(w){pr.push([d,w[0]]);(tak[d]=tak[d]||[]).push([w[0],w[0]+a.m])}else no.push(d)});
+ if(!pr.length&&!no.length)return toast('Nada a encaixar: todos os dias já têm horário.');
+ ask('Sugestão de encaixe:\n'+pr.map(([d,s])=>`${fd(d)} ${hm(s)}–${hm(s+t.alloc[d].m)}`).join('\n')+(no.length?'\n\nSem janela livre confirmada em: '+no.map(fd).join(', ')+'. Informe disponibilidade nesses dias ou ajuste as horas.':'')+'\n\nAplicar os horários sugeridos?',()=>{pr.forEach(([d,s])=>t.alloc[d].s=hm(s))})};
+/* TAREFAS */
+V.tarefas=()=>{const f=FL,t0=today(),fl=D.tasks.filter(t=>{if(f.proj&&t.proj!==f.proj)return 0;if(f.pri&&t.pri!==f.pri)return 0;if(f.date&&t.date!==f.date)return 0;return f.st==='Abertas'?act(t):f.st==='Arquivadas'?t.arch:f.st==='Todas'?!t.arch:!t.arch&&t.status===f.st}).sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:(a.date||'9')>(b.date||'9')?1:a.pri<b.pri?-1:1),rc=recov(),sel=(k,o)=>`<select data-f="${k}">${o.map(x=>`<option value="${E(x[0])}"${f[k]===x[0]?' selected':''}>${E(x[1])}</option>`).join('')}</select>`;
+ return`<h2>Tarefas</h2>${rc.length?`<div class="c warn"><h3>Fila de recuperação</h3>${rc.map(t=>`<div class="it" style="--k:var(--er)"><span>${E(t.name)} <span class="mu">${t.due&&t.due<t0?'prazo '+fd(t.due):'planejada '+fd(t.date)}</span></span><span><button class="s" data-a="tre" data-i="${t.id}">Reprogramar</button> <button class="s" data-a="tcan" data-i="${t.id}">Cancelar</button> <button class="s" data-a="tkeep" data-i="${t.id}">Manter</button></span></div>`).join('')}</div>`:''}
+ <div class="row"><button class="b" data-a="nt">+ Nova tarefa</button>${sel('proj',[['','Todos os projetos'],...D.projects.map(p=>[p.id,p.name])])}${sel('pri',[['','Toda prioridade'],...PR])}${sel('st',[...['Abertas','Todas',...ST,'Arquivadas'].map(x=>[x,x])])}<input type="date" data-f="date" value="${f.date}"></div>
+ ${fl.map(t=>`<div class="it" style="--k:${KC.task}"><div><b>${E(t.name)}</b> <span class="bd">${t.pri}</span><span class="bd">${t.cat}</span><span class="bd">${t.status}</span><br><span class="mu">${E(pName(t.proj))} · ${t.fit?(t.ps?'Encaixada '+fh(t.wh)+'/sem · '+fd(t.ps)+'–'+fd(t.pe):'Encaixada na rotina'):t.date?fd(t.date)+(t.start?' '+t.start:''):'sem data'}${t.due?' · prazo '+fd(t.due):''} · ${fh(t.dur)} · ${t.flex}</span></div><div>${act(t)?`<button class="s" data-a="tdone" data-i="${t.id}">✓</button> `:''}${t.fit&&act(t)?`<button class="s" data-a="dist" data-i="${t.id}">Distribuir</button> <button class="s" data-a="fita" data-i="${t.id}">Encaixar</button> `:''}<button class="s" data-a="te" data-i="${t.id}">Editar</button> <button class="s" data-a="tpo" data-i="${t.id}">Adiar</button> <button class="s" data-a="tre" data-i="${t.id}">Reprogramar</button> <button class="s" data-a="tar" data-i="${t.id}">${t.arch?'Desarquivar':'Arquivar'}</button> <button class="s" data-a="tdel" data-i="${t.id}">✕</button></div></div>`).join('')||'<p class="mu">Nenhuma tarefa neste filtro.</p>'}`};
+const tf=t=>[{k:'name',l:'Nome',v:t.name,r:1},{k:'desc',l:'Descrição',t:'textarea',v:t.desc},{k:'proj',l:'Projeto',t:'select',v:t.proj,o:[['','— nenhum —'],...D.projects.filter(p=>p.st!=='Arquivado'||p.id===t.proj).map(p=>[p.id,p.name])]},{k:'cat',l:'Categoria',t:'select',v:t.cat,o:CT},{k:'pri',l:'Prioridade',t:'select',v:t.pri,o:PR},{k:'date',l:'Data planejada',t:'date',v:t.date},{k:'start',l:'Horário planejado (opcional)',t:'time',v:t.start},{k:'due',l:'Prazo final',t:'date',v:t.due},{k:'dur',l:'Duração estimada (min) — usada se NÃO encaixar na rotina',t:'number',v:t.dur},{k:'fit',l:'Encaixar na rotina (meta em horas semanais)',t:'checkbox',v:t.fit},{k:'wh',l:'Horas semanais da tarefa',t:'number',v:t.wh?t.wh/60:''},{k:'ps',l:'Período — início',t:'date',v:t.ps},{k:'pe',l:'Período — fim',t:'date',v:t.pe},{k:'energy',l:'Energia necessária',t:'select',v:t.energy,o:EN},{k:'status',l:'Status',t:'select',v:t.status,o:ST},{k:'flex',l:'Flexibilidade',t:'select',v:t.flex,o:FX},{k:'obs',l:'Observações',t:'textarea',v:t.obs}];
+A.nt=()=>A.te();
+A.te=id=>{const old=id?tk(id):null,b=old||{name:'',desc:'',proj:'',cat:'Atividade extra',pri:'P2',date:'',start:'',due:'',dur:60,energy:'Média',status:'Não iniciada',flex:'Pode mudar de dia',obs:''};
+ form(old?'Editar tarefa':'Nova tarefa',tf(b),o=>{o.name=o.name.trim();if(!o.name)return'Informe o nome.';if(o.fit){const N=nDays(o.ps||'x',o.pe||'x');if(!(o.wh>0)||!o.ps||!o.pe)return'Para encaixar na rotina, informe as horas semanais e o período (início e fim).';if(o.pe<o.ps)return'O fim do período deve ser depois do início.';if(N>62)return'Período máximo: 62 dias.';o.wh=Math.round(o.wh*60);o.dur=Math.round(o.wh*weeksOf(N));o.date='';o.start='';if(!o.due)o.due=o.pe}else if(!(o.dur>=1))return'Informe a duração estimada (min).';if(o.start&&!o.date)return'Horário exige uma data.';if(o.due&&o.date&&o.due<o.date)return'O prazo não pode ser anterior à data planejada.';
+  if(D.tasks.some(t=>t.id!==id&&!t.arch&&t.name.toLowerCase()===o.name.toLowerCase()&&t.proj===o.proj&&t.date===o.date))return'Já existe uma tarefa igual (nome, projeto e data).';
+  const n=Object.assign({},old||{id:uid(),arch:false},o);const c=conflict(n),wk_=c+n.date+n.start;if(c&&A.w!==wk_){A.w=wk_;return c+' Alternativas: '+alts(n).join('; ')+'. Para manter este horário mesmo assim, clique em Salvar novamente.'}
+  if(n.status==='Concluída'&&!n.done)n.done=today();if(n.status!=='Concluída')n.done='';if(n.fit){n.alloc=(old&&old.alloc&&old.ps===n.ps&&old.pe===n.pe&&old.wh===n.wh)?old.alloc:evenAlloc(n);const N=nDays(n.ps,n.pe);toast(N+' dias · '+fh(n.dur)+' no total · ≈'+fh(n.dur/N)+' por dia. Ajuste em "Distribuir".')}if(old)Object.assign(old,n);else D.tasks.push(n)})};
+A.tdone=id=>{const t=tk(id);t.status='Concluída';t.done=today();save();render()};
+A.tcan=id=>{tk(id).status='Cancelada';save();render()};A.tkeep=id=>{tk(id).kept=today();save();render()};A.tar=id=>{const t=tk(id);t.arch=!t.arch;save();render()};
+A.tdel=id=>ask('Excluir a tarefa? As sessões vinculadas serão mantidas sem tarefa. Prefira arquivar para preservar o histórico.',()=>{D.sessions.forEach(s=>{if(s.task===id)s.task=''});D.tasks=D.tasks.filter(t=>t.id!==id)});
+A.tpo=id=>{const t=tk(id);if(t.flex==='Não pode ser adiada')toast('Atenção: esta tarefa está marcada como "Não pode ser adiada".');form('Adiar tarefa',[{k:'d',l:'Nova data',t:'date',v:addD(today(),1),r:1}],o=>{if(!o.d)return'Informe a data.';t.status='Adiada';t.date=o.d;t.start=''});};
+A.tre=id=>{const t=tk(id);form('Reprogramar',[{k:'d',l:'Data',t:'date',v:t.date&&t.date>=today()?t.date:today(),r:1},{k:'s',l:'Horário (opcional)',t:'time',v:''}],o=>{if(!o.d)return'Informe a data.';const n=Object.assign({},t,{date:o.d,start:o.s});const c=conflict(n),wk_=c+n.date+n.start;if(c&&A.w!==wk_){A.w=wk_;return c+' Alternativas: '+alts(n).join('; ')+'. Para manter assim, clique em Salvar novamente.'}t.date=o.d;t.start=o.s;if(t.status==='Adiada')t.status='Não iniciada'})};
+/* PROJETOS */
+const pMin=id=>sumMin(s=>s.proj===id);
+V.projetos=()=>{if(PRJ&&pj(PRJ))return projDet(pj(PRJ));const ps=x=>D.projects.filter(p=>x?p.st==='Arquivado':p.st!=='Arquivado');return`<h2>Projetos</h2><div class="row"><button class="b" data-a="np">+ Novo projeto</button></div><div class="g">${ps(0).map(pc).join('')||'<p class="mu">Nenhum projeto criado.</p>'}</div>${ps(1).length?`<h3 style="margin-top:18px">Arquivados</h3><div class="g">${ps(1).map(pc).join('')}</div>`:''}`};
+const pc=p=>{const T=D.tasks.filter(t=>t.proj===p.id);return`<div class="c"><a data-a="opj" data-i="${p.id}" style="cursor:pointer;font-weight:700">${E(p.name)}</a> <span class="bd">${p.st}</span><p class="mu">${fh(pMin(p.id))} investidas · ${T.filter(t=>t.status==='Concluída').length}/${T.length} tarefas${p.due?' · prazo '+fd(p.due):''}</p></div>`};
+A.opj=id=>{PRJ=id;view='projetos';if(location.hash!=='#projetos')location.hash='projetos';else render()};
+function projDet(p){const T=D.tasks.filter(t=>t.proj===p.id),S=D.sessions.filter(s=>s.proj===p.id).sort((a,b)=>b.s-a.s),t0=mon(today());
+ return`<div class="row"><button data-a="go" data-i="projetos">← Projetos</button><h2 style="margin:0">${E(p.name)}</h2><span class="bd">${p.st}</span><span class="sp"></span><button data-a="pe" data-i="${p.id}">Editar</button><button data-a="pa" data-i="${p.id}">${p.st==='Arquivado'?'Reativar':'Arquivar'}</button><button data-a="pdel" data-i="${p.id}">Excluir</button></div>
+ <div class="c"><p>${E(p.desc)}</p><p class="mu">Objetivo: ${E(p.goal)||'—'} · Início ${p.start?fd(p.start):'—'} · Prazo ${p.due?fd(p.due):'—'}</p><div class="g q"><div><span class="n">${fh(pMin(p.id))}</span><br>investidas</div><div><span class="n">${T.filter(t=>t.status==='Concluída').length}/${T.length}</span><br>tarefas concluídas</div></div></div>
+ <div class="c"><h3>Evolução semanal (8 semanas)</h3>${bars([...Array(8)].map((_,i)=>{const mo=addD(t0,-7*(7-i));return{l:mo.slice(8)+'/'+mo.slice(5,7),v:sumMin(s=>s.proj===p.id&&s.d>=mo&&s.d<=addD(mo,6))}}))}</div>
+ <div class="c"><h3>Tarefas</h3>${T.map(t=>`<div class="it" style="--k:${KC.task}"><span>${E(t.name)}</span><span class="mu">${t.status}</span></div>`).join('')||'<p class="mu">Sem tarefas.</p>'}</div>
+ <div class="c"><h3>Histórico de produção</h3>${S.map(s=>`<div class="it" style="--k:${KC.sess}"><span>${fd(s.d)} ${tOf(s.s)}–${tOf(s.e)}</span><span class="mu">${fh(s.min)}</span></div>`).join('')||'<p class="mu">Sem sessões.</p>'}</div>`}
+A.np=()=>A.pe();
+A.pe=id=>{const o0=id?pj(id):null,b=o0||{name:'',desc:'',goal:'',start:today(),due:'',st:'Planejamento'};form(o0?'Editar projeto':'Novo projeto',[{k:'name',l:'Nome',v:b.name,r:1},{k:'desc',l:'Descrição',t:'textarea',v:b.desc},{k:'goal',l:'Objetivo',t:'textarea',v:b.goal},{k:'start',l:'Data de início',t:'date',v:b.start},{k:'due',l:'Prazo',t:'date',v:b.due},{k:'st',l:'Status',t:'select',v:b.st,o:PS}],o=>{o.name=o.name.trim();if(!o.name)return'Informe o nome.';if(D.projects.some(p=>p.id!==id&&p.name.toLowerCase()===o.name.toLowerCase()))return'Já existe um projeto com esse nome.';if(o.due&&o.start&&o.due<o.start)return'O prazo não pode ser anterior ao início.';if(o0)Object.assign(o0,o);else D.projects.push(Object.assign({id:uid()},o))})};
+A.pa=id=>{const p=pj(id);p.st=p.st==='Arquivado'?'Em andamento':'Arquivado';save();render()};
+A.pdel=id=>ask('Excluir o projeto? Tarefas e sessões são mantidas, sem projeto. Prefira arquivar.',()=>{D.tasks.forEach(t=>{if(t.proj===id)t.proj=''});D.sessions.forEach(s=>{if(s.proj===id)s.proj=''});D.projects=D.projects.filter(p=>p.id!==id);PRJ=null});
+/* CRONÔMETRO */
+A.ts=()=>{if(D.timer)return toast('Já existe uma sessão ativa.');form('Iniciar produção',[{k:'task',l:'Tarefa (opcional)',t:'select',o:[['','— nenhuma —'],...D.tasks.filter(act).map(t=>[t.id,t.name])]},{k:'proj',l:'Projeto (opcional)',t:'select',o:[['','— nenhum —'],...D.projects.filter(p=>p.st!=='Arquivado').map(p=>[p.id,p.name])]}],o=>{const t=tk(o.task);D.timer={s:Date.now(),pm:0,pa:null,task:o.task,proj:o.proj||(t&&t.proj)||''};if(t&&t.status==='Não iniciada')t.status='Em andamento'})};
+A.tp=()=>{D.timer.pa=Date.now();save();render()};A.tr=()=>{D.timer.pm+=Date.now()-D.timer.pa;D.timer.pa=null;save();render()};
+A.tf=()=>{const t=D.timer;if(!t)return;addSess(t.s,t.pa||Date.now(),tMs(t),t.task,t.proj,false);D.timer=null;save();render()};
+A.fx=()=>{const t=D.timer;form('Corrigir término da sessão',[{k:'d',l:'Data do término',t:'date',v:dOf(t.s),r:1},{k:'h',l:'Horário do término',t:'time',v:tOf(t.s),r:1}],o=>{const e=toTs(o.d,o.h);if(!(e>t.s))return'O término deve ser depois do início.';if(e>Date.now())return'O término não pode estar no futuro.';addSess(t.s,e,Math.min(e,t.pa||e)-t.s-t.pm,t.task,t.proj,true);D.timer=null})};
+A.sf=id=>{const s=id?D.sessions.find(x=>x.id===id):null;form(s?'Editar sessão':'Sessão manual',[{k:'d',l:'Data',t:'date',v:s?s.d:today(),r:1},{k:'a',l:'Início',t:'time',v:s?tOf(s.s):'',r:1},{k:'b',l:'Término',t:'time',v:s?tOf(s.e):'',r:1},{k:'task',l:'Tarefa',t:'select',v:s?s.task:'',o:[['','— nenhuma —'],...D.tasks.map(t=>[t.id,t.name])]},{k:'proj',l:'Projeto',t:'select',v:s?s.proj:'',o:[['','— nenhum —'],...D.projects.map(p=>[p.id,p.name])]}],o=>{const a=toTs(o.d,o.a),b=toTs(o.d,o.b);if(!(b>a))return'O término deve ser depois do início (no mesmo dia).';if(b>Date.now())return'O término não pode estar no futuro.';const min=Math.max(1,Math.round((b-a)/6e4)),proj=o.proj||(tk(o.task)||{}).proj||'';if(s)Object.assign(s,{s:a,e:b,min,d:o.d,task:o.task,proj,fix:true});else D.sessions.push({id:uid(),s:a,e:b,min,d:o.d,task:o.task,proj,fix:true})})};
+A.sd=id=>ask('Excluir esta sessão?',()=>{D.sessions=D.sessions.filter(s=>s.id!==id)});
+V.cronometro=()=>{const t=D.timer,t0=today(),mo=mon(t0),ym=t0.slice(0,7),S=D.sessions.slice().sort((a,b)=>b.s-a.s).slice(0,30);
+ return`<h2>Cronômetro de produção</h2><div class="c">${t?`<div class="big tclock">${clock(tMs())}</div><p class="mu">${t.pa?'Pausado':'Em andamento'} · início ${fd(dOf(t.s))} ${tOf(t.s)} · ${E(t.task&&tk(t.task)?tk(t.task).name:'sem tarefa')} · ${E(pName(t.proj))}</p>${stale()?'<p class="er">Sessão possivelmente esquecida: corrija o término.</p>':''}<div class="row">${t.pa?'<button class="b" data-a="tr">Retomar</button>':'<button data-a="tp">Pausar</button>'}<button class="b" data-a="tf">Finalizar</button><button data-a="fx">Corrigir término</button></div>`:'<div class="big">00:00:00</div><button class="b" data-a="ts">Iniciar sessão</button>'}</div>
+ <div class="g q"><div class="c"><span class="n">${fh(sumMin(s=>s.d===t0))}</span><br>hoje</div><div class="c"><span class="n">${fh(wkMin(mo))}</span><br>semana</div><div class="c"><span class="n">${fh(sumMin(s=>s.d.startsWith(ym)))}</span><br>mês</div></div>
+ <div class="row"><h3 style="margin:0">Sessões recentes</h3><span class="sp"></span><button data-a="sf">+ Sessão manual</button></div>${S.map(s=>`<div class="it" style="--k:${KC.sess}"><span>${fd(s.d)} ${tOf(s.s)}–${tOf(s.e)} · ${fh(s.min)} ${s.fix?'<span class="bd">ajustada</span>':''}<br><span class="mu">${E(s.task&&tk(s.task)?tk(s.task).name:'—')} · ${E(pName(s.proj))}</span></span><span><button class="s" data-a="sf" data-i="${s.id}">Editar</button> <button class="s" data-a="sd" data-i="${s.id}">✕</button></span></div>`).join('')||'<p class="mu">Nenhuma sessão registrada.</p>'}`};
+/* PLANEJADOR */
+const loads=(days,skip)=>{const L={};days.forEach(d=>L[d]=sumMin(s=>s.d===d)+D.tasks.filter(t=>act(t)&&t.start&&t.date===d&&!skip.has(t.id)).reduce((a,t)=>a+t.dur,0)+fitCh(d).reduce((a,c)=>a+c.a.m,0));return L};
+function slot(t,days,L,tak,skip){const cap=D.set.maxDay;for(const d of days.slice().sort((a,b)=>L[a]-L[b]||(a<b?-1:1))){if(L[d]+t.dur>cap)continue;for(const[s,e]of fw(d,tak[d]||[],skip))if(e-s>=t.dur)return{d,s}}return null}
+const put=(r,t,L,tak)=>{(tak[r.d]=tak[r.d]||[]).push([r.s,r.s+t.dur]);L[r.d]+=t.dur};
+A.gen=()=>{const t0=today(),mo=mon(t0),all=[...Array(7)].map((_,i)=>addD(mo,i)),days=all.filter(d=>d>=t0),goal=wkGoal(mo),prod=wkMin(mo),sched=D.tasks.filter(t=>act(t)&&t.start&&t.date>=t0&&t.date<=all[6]),planned=sched.reduce((a,t)=>a+t.dur,0)+days.reduce((a,d)=>a+fitCh(d).reduce((x,c)=>x+c.a.m,0),0),need=Math.max(0,goal-prod-planned),L=loads(days,new Set()),tak={},sug=[],un=[];
+ const key=t=>[t.due&&t.due<t0?0:1,t.pri,t.due||'9999',t.date||'9999'],C=D.tasks.filter(t=>act(t)&&t.cat==='Atividade extra'&&!t.start&&!t.fit).sort((a,b)=>{const x=key(a),y=key(b);for(let i=0;i<4;i++)if(x[i]!==y[i])return x[i]<y[i]?-1:1;return 0});
+ let capMin=0;days.forEach(d=>capMin+=Math.max(0,Math.min(fw(d).reduce((a,w)=>a+w[1]-w[0],0),D.set.maxDay-L[d])));let left=need;
+ for(const t of C){if(left<=0)break;let ds=t.flex==='Não pode ser adiada'&&t.date?days.filter(d=>d===t.date):days;ds=ds.filter(d=>!t.due||d<=t.due||t.due<t0);const r=slot(t,ds,L,tak,new Set());if(r){sug.push({id:t.id,d:r.d,s:r.s});put(r,t,L,tak);left-=t.dur}else un.push(t)}
+ P={goal,prod,planned,need,capMin,candMin:C.reduce((a,t)=>a+t.dur,0),sug,un,und:days.filter(d=>!D.days[d])};render()};
+A.pap=()=>{const er=[],ch=[];document.querySelectorAll('.sg').forEach(r=>{if(!r.querySelector('.pc').checked)return;const t=tk(r.dataset.id),n=Object.assign({},t,{date:r.querySelector('.pd').value,start:r.querySelector('.ps').value}),c=conflict(n);if(c)er.push(`${t.name}: ${c} Alternativas: ${alts(n).join('; ')}`);else ch.push([t,n])});
+ if(er.length){const d=$('#dlg');d.innerHTML='<form><h3>Não aplicado — conflitos</h3><p style="white-space:pre-wrap">'+E(er.join('\n\n'))+'</p><button type="button" class="b">OK</button></form>';d.querySelector('button').onclick=()=>d.close();d.showModal();return}ch.forEach(([t,n])=>{t.date=n.date;t.start=n.start});P=null;save();toast(ch.length+' tarefa(s) agendada(s).');render()};
+const planOut=p=>{const sh=p.capMin<p.need;return`<div class="c"><div class="g q"><div>Meta<br><span class="n">${fh(p.goal)}</span></div><div>Produzido<br><span class="n">${fh(p.prod)}</span></div><div>Já agendado<br><span class="n">${fh(p.planned)}</span></div><div>A planejar<br><span class="n">${fh(p.need)}</span></div><div>Disponível<br><span class="n">${fh(p.capMin)}</span></div></div></div>`
+ +(sh?`<div class="c warn"><b>A disponibilidade desta semana não é suficiente para alcançar sua meta de ${+(p.goal/60).toFixed(1)} horas sem comprometer seus compromissos ou descanso.</b><p>Horas disponíveis: ${fh(p.capMin)} · Horas necessárias: ${fh(p.need)} · Déficit de capacidade: ${fh(p.need-p.capMin)}</p><ul><li>Informar disponibilidade nos dias ainda não definidos${p.und.length?' ('+p.und.map(fd).join(', ')+')':''}.</li><li>Reduzir a meta desta semana (Meta e limites).</li><li>Deixar o restante para a próxima semana — nada é compensado automaticamente.</li><li>Dividir tarefas longas em partes menores.</li></ul></div>`:'')
+ +(p.need>0&&p.candMin<p.need?`<div class="c warn">Faltam tarefas de "Atividade extra": ${fh(p.candMin)} cadastradas para ${fh(p.need)} necessários.</div>`:'')+(p.need<=0?'<div class="c">A meta já está coberta por sessões registradas e tarefas agendadas.</div>':'')
+ +(p.sug.length?`<div class="c"><h3>Sugestões (edite antes de aplicar)</h3>${p.sug.map(s=>{const t=tk(s.id);return`<div class="it sg" data-id="${s.id}" style="--k:${KC.task}"><label class="ck"><input type="checkbox" class="pc" checked> ${E(t.name)} · ${fh(t.dur)} · ${t.pri}</label><span><input type="date" class="pd" value="${s.d}"> <input type="time" class="ps" value="${hm(s.s)}"></span></div>`}).join('')}<button class="b" data-a="pap">Aplicar selecionadas</button></div>`:'')+(p.un.length?`<div class="c"><b>Sem horário adequado:</b> ${p.un.map(t=>E(t.name)).join(', ')}</div>`:'')};
+V.planejador=()=>`<h2>Planejador inteligente</h2><p class="mu">Usa apenas a disponibilidade que você informou, respeita o limite diário de ${fh(D.set.maxDay)} e o horário de dormir (${D.set.sleep}). Nada muda até você confirmar.</p><div class="row"><button class="b" data-a="gen">Gerar sugestões</button><button data-a="cfg">Meta e limites</button></div>${P?planOut(P):''}`;
+A.cfg=()=>{const mo=mon(today());form('Meta e limites',[{k:'g',l:'Meta semanal (horas)',t:'number',v:wkGoal(mo)/60},{k:'md',l:'Limite diário de extras (horas)',t:'number',v:D.set.maxDay/60},{k:'sl',l:'Horário de dormir',t:'time',v:D.set.sleep}],o=>{if(!(o.g>=0)||!(o.md>0)||!o.sl)return'Valores inválidos.';D.set.goal=Math.round(o.g*60);D.set.maxDay=Math.round(o.md*60);D.set.sleep=o.sl;D.weeks[mo]={goal:D.set.goal};P=null})};
+/* REORGANIZAR */
+A.ran=()=>{R.date=$('#rd').value;R.s=$('#rs').value;R.e=$('#re').value;R.n=$('#rn').value;if(!R.date||!R.s||!R.e||m(R.e)<=m(R.s)){R.res=null;toast('Informe data e um intervalo válido.');return render()}
+ const t0=today(),S=m(R.s),Ee=m(R.e),mo=mon(R.date),we=addD(mo,6),aff=D.tasks.filter(t=>act(t)&&t.date===R.date&&t.start&&ov(S,Ee,m(t.start),m(t.start)+t.dur)),fx=blocks(R.date).filter(b=>ov(S,Ee,b.s,b.e)),flex=aff.filter(t=>t.flex!=='Não pode ser adiada'),rigid=aff.filter(t=>t.flex==='Não pode ser adiada'),skip=new Set(flex.map(t=>t.id));
+ const from=R.date>t0?R.date:t0,days=[...Array(15)].map((_,i)=>addD(from,i)).filter(d=>d<=addD(we,7)),L=loads(days,skip),tak={[R.date]:[[S,Ee]]},mv=[],un=[];
+ flex.forEach(t=>{const ds=days.filter(d=>t.flex==='Pode mudar de semana'||d<=we);const r=slot(t,ds,L,tak,skip);if(r){mv.push({t,d:r.d,s:r.s});put(r,t,L,tak)}else un.push(t)});
+ const sched=D.tasks.filter(t=>act(t)&&t.start&&t.date>=mo&&t.date<=we).reduce((a,t)=>a+t.dur,0),prod=wkMin(mo),g=wkGoal(mo),lost=aff.filter(t=>flex.includes(t)).reduce((a,t)=>a+((mv.find(x=>x.t===t)&&mv.find(x=>x.t===t).d<=we)?0:t.dur),0);
+ R.res={aff,fx,rigid,mv,un,before:prod+sched,after:prod+sched-lost,g};render()};
+A.rco=()=>{const r=R.res,nd=D.days[R.date]||(D.days[R.date]={aula:false,wm:false,wa:false,av:[],un:[]});(nd.un=nd.un||[]).push({s:R.s,e:R.e,n:R.n||'Imprevisto'});r.mv.forEach(x=>{x.t.date=x.d;x.t.start=hm(x.s)});r.un.forEach(t=>{t.status='Adiada';t.date='';t.start=''});R.res=null;R.s=R.e=R.n='';save();toast('Alterações aplicadas.');render()};
+V.reorganizar=()=>{const r=R.res;return`<h2>Reorganizar minha semana</h2><div class="c"><p class="mu">Informe o período que ficou indisponível. O FLUXO mostra o impacto e só aplica após sua confirmação.</p><div class="row"><input type="date" id="rd" value="${R.date}"><input type="time" id="rs" value="${R.s}"><input type="time" id="re" value="${R.e}"><input id="rn" placeholder="Motivo" value="${E(R.n)}"><button class="b" data-a="ran">Analisar</button></div></div>`+(r?`<div class="c"><h3>Conflito e impacto</h3>${r.fx.map(b=>`<p class="er">Atinge compromisso fixo: ${b.l} (${hm(b.s)}–${hm(b.e)}). Ele não será alterado automaticamente.</p>`).join('')}${r.aff.length?'':'<p>Nenhuma tarefa agendada é afetada.</p>'}${r.mv.map(x=>`<div class="it" style="--k:${KC.task}"><span>${E(x.t.name)}</span><span class="mu">→ ${fd(x.d)} ${hm(x.s)}</span></div>`).join('')}${r.un.map(t=>`<div class="it" style="--k:var(--wa)"><span>${E(t.name)}</span><span class="mu">sem horário livre: será marcada como Adiada, sem data</span></div>`).join('')}${r.rigid.map(t=>`<div class="it" style="--k:var(--er)"><span>${E(t.name)}</span><span class="mu">não pode ser adiada: conflito mantido — decida manualmente</span></div>`).join('')}<p>Meta ${fh(r.g)}: produzido + agendado antes ${fh(r.before)} (${r.g?Math.round(r.before/r.g*100):0}%) → depois ${fh(r.after)} (${r.g?Math.round(r.after/r.g*100):0}%).</p><button class="b" data-a="rco">Confirmar e aplicar</button></div>`:'')};
+/* DESEMPENHO */
+V.desempenho=()=>{const t0=today(),mo=mon(t0),g=wkGoal(mo),ws=new Set(Object.keys(D.weeks));D.sessions.forEach(s=>ws.add(mon(s.d)));const W=[...ws].sort().reverse(),pm={};D.sessions.forEach(s=>pm[s.proj]=(pm[s.proj]||0)+s.min);const tot=Object.values(pm).reduce((a,b)=>a+b,0),
+ M=[...Array(6)].map((_,i)=>{const d=new Date(Date.UTC(+t0.slice(0,4),+t0.slice(5,7)-1-(5-i),1)).toISOString().slice(0,7);return{l:d.slice(5)+'/'+d.slice(2,4),v:sumMin(s=>s.d.startsWith(d))}}),cnt=s=>D.tasks.filter(t=>t.status===s).length;
+ return`<h2>Meu desempenho</h2><div class="row"><button data-a="cfg">Editar meta semanal</button></div><div class="g"><div class="c"><h3>Produção diária (14 dias)</h3>${bars([...Array(14)].map((_,i)=>{const d=addD(t0,i-13);return{l:d.slice(8),v:sumMin(s=>s.d===d)}}))}</div>
+ <div class="c"><h3>Semanal vs meta (8 semanas)</h3>${bars([...Array(8)].map((_,i)=>{const w=addD(mo,-7*(7-i));return{l:w.slice(8)+'/'+w.slice(5,7),v:wkMin(w)}}),g)}</div>
+ <div class="c"><h3>Mensal</h3>${bars(M)}</div><div class="c"><h3>Tempo por projeto</h3>${Object.entries(pm).sort((a,b)=>b[1]-a[1]).map(([id,v])=>`<div>${E(pName(id))} · ${fh(v)} (${Math.round(v/tot*100)}%)</div>${prog(v,tot)}`).join('')||'<p class="mu">Sem sessões registradas.</p>'}</div></div>
+ <div class="c"><h3>Tarefas</h3>Concluídas: ${cnt('Concluída')} · Adiadas: ${cnt('Adiada')} · Canceladas: ${cnt('Cancelada')}</div>
+ <div class="c ov"><h3>Relatório por semana</h3><table><tr><th>Semana</th><th>Meta</th><th>Produzido</th><th>%</th><th>Tarefas</th><th>Projetos</th><th>Resultado</th></tr>${W.map(w=>{const p=wkMin(w),gg=wkGoal(w),pr=[...new Set(D.sessions.filter(s=>mon(s.d)===w).map(s=>pName(s.proj)))].join(', ');return`<tr><td>${fd(w)} – ${fd(addD(w,6))}</td><td>${fh(gg)}</td><td>${fh(p)}</td><td>${gg?Math.round(p/gg*100):0}%</td><td>${wkDone(w)}</td><td>${E(pr)||'—'}</td><td>${w===mo?'Em andamento':p>=gg?'Meta atingida':'Meta não atingida'}</td></tr>`}).join('')}</table></div>`};
+/* HISTÓRICO */
+V.historico=()=>{const S=D.sessions.slice().sort((a,b)=>b.s-a.s),T=D.tasks.filter(t=>t.status==='Concluída'||t.status==='Cancelada').sort((a,b)=>(b.done||'')<(a.done||'')?-1:1);
+ return`<h2>Histórico</h2><div class="c"><h3>Sessões (${S.length})</h3>${S.map(s=>`<div class="it" style="--k:${KC.sess}"><span>${fd(s.d)} ${tOf(s.s)}–${tOf(s.e)} · ${E(s.task&&tk(s.task)?tk(s.task).name:'—')} · ${E(pName(s.proj))}</span><span class="mu">${fh(s.min)}</span></div>`).join('')||'<p class="mu">Vazio.</p>'}</div><div class="c"><h3>Tarefas concluídas e canceladas</h3>${T.map(t=>`<div class="it" style="--k:${KC.task}"><span>${E(t.name)}</span><span class="mu">${t.status}${t.done?' em '+fd(t.done):''}</span></div>`).join('')||'<p class="mu">Vazio.</p>'}</div>
+ <div class="c"><h3>Backup</h3><p class="mu">Os dados são sincronizados com sua conta na nuvem quando conectado. Gere um backup periódico para ter uma cópia independente.</p><textarea id="bk" rows="4" style="width:100%"></textarea><div class="row"><button data-a="bkg">Gerar backup</button><button data-a="bkd">Baixar arquivo</button><button data-a="bkr">Restaurar do texto</button></div></div>`};
+A.bkg=()=>{$('#bk').value=JSON.stringify(D)};A.bkr=()=>{try{const o=JSON.parse($('#bk').value);if(!o.tasks||!o.sessions)throw 0;ask('Substituir todos os dados atuais?',()=>{D=Object.assign(blank(),o)})}catch(e){toast('Backup inválido.')}};
+/* SUPABASE CLOUD SYNC */
+// Preencha com os dados do seu projeto Supabase (Project URL e anon/public key).
+const SUPABASE_URL='COLE_AQUI_SUA_PROJECT_URL';
+const SUPABASE_PUBLISHABLE_KEY='COLE_AQUI_SUA_ANON_PUBLIC_KEY';
+let DB=null,UID=null,SY='local',tmr=null,busy=false,dirty=false,cloudReady=false;
+const SYT={local:'Configure o Supabase',sync:'Sincronizando…',ok:'☁ Salvo na nuvem',err:'⚠ Falha na sincronização'};
+function setSy(x){SY=x;const e=$('#sy');if(e)e.textContent=SYT[x]||x}
+function hasLocalData(){return !!(D.tasks.length||D.projects.length||D.sessions.length||Object.keys(D.days).length||Object.keys(D.weeks).length)}
+function sched(){if(!DB||!UID||!cloudReady)return;dirty=true;setSy('sync');clearTimeout(tmr);tmr=setTimeout(push,700)}
+async function push(){if(!DB||!UID||!cloudReady)return;if(busy){tmr=setTimeout(push,400);return}busy=true;dirty=false;try{
+ const payload={user_id:UID,data:D,updated_at:new Date().toISOString()};
+ const {error}=await DB.from('fluxo_data').upsert(payload,{onConflict:'user_id'});
+ if(error)throw error;setSy(dirty?'sync':'ok');
+ }catch(e){console.error('FLUXO sync error:',e);setSy('err');toast('Não foi possível sincronizar. Seus dados locais foram preservados.');}
+ busy=false;if(dirty)sched()}
+async function pullCloud(){
+ const {data,error}=await DB.from('fluxo_data').select('data,updated_at').eq('user_id',UID).maybeSingle();
+ if(error)throw error;
+ if(data&&data.data){
+   // A nuvem é a fonte principal quando já existe um registro para esta conta.
+   D=Object.assign(blank(),data.data||{});
+   try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){console.warn('Local cache unavailable',e)}
+   setSy('ok');
+ }else{
+   // Migra dados locais antigos apenas na primeira conta deste navegador.
+   // Evita copiar dados de uma conta para outra ao alternar usuários.
+   const localOwner=localStorage.getItem(KEY+'.owner');
+   if(hasLocalData()&&(!localOwner||localOwner===UID))D.t=D.t||Date.now();
+   else {D=blank();D.t=Date.now();}
+   cloudReady=true;
+   await push();
+ }
+ try{localStorage.setItem(KEY+'.owner',UID)}catch(e){}
+ cloudReady=true;render();
+}
+function showAuth(message=''){$('#authscreen').style.display='flex';$('nav').style.display='none';$('main').style.display='none';$('#authmsg').textContent=message}
+function showApp(){$('#authscreen').style.display='none';$('nav').style.display='';$('main').style.display='';render()}
+async function authAction(kind){
+ const email=$('#authemail').value.trim(),password=$('#authpass').value;
+ if(kind!=='reset'&&(!email||!password)){showAuth('Informe e-mail e senha.');return}
+ $('#authmsg').textContent='Aguarde…';
+ try{
+  let result;
+  if(kind==='signup')result=await DB.auth.signUp({email,password});
+  else if(kind==='reset')result=await DB.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+  else result=await DB.auth.signInWithPassword({email,password});
+  if(result.error)throw result.error;
+  if(kind==='signup'&&!result.data.session){showAuth('Cadastro iniciado. Confirme seu e-mail pelo link enviado e depois entre.');return}
+  if(kind==='reset'){showAuth('Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.');return}
+  $('#authmsg').textContent='Login realizado. Carregando sua agenda…';
+ }catch(e){console.error(e);showAuth(e.message||'Erro de autenticação. Verifique os dados e tente novamente.')}
+}
+$('#authform').addEventListener('submit',e=>{e.preventDefault();authAction('login')});
+$('#signupbtn').addEventListener('click',()=>authAction('signup'));
+$('#resetbtn').addEventListener('click',()=>authAction('reset'));
+A.logout=async()=>{if(!DB)return;const {error}=await DB.auth.signOut();if(error){toast('Não foi possível sair da conta.');return}UID=null;cloudReady=false;showAuth('Você saiu da sua conta.')};
+A.bkd=()=>{try{const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='fluxo-backup-'+today()+'.json';a.click();URL.revokeObjectURL(url)}catch(e){toast('Não foi possível baixar o backup.')}};
+document.addEventListener('visibilitychange',()=>{if(DB&&UID&&cloudReady&&!document.hidden&&!busy&&dirty)push()});
+view=NAV.some(n=>'#'+n[0]===location.hash)?location.hash.slice(1):'visao';
+(async()=>{
+ const ld=$('#ld');ld.style.display='flex';
+ try{
+  if(!window.supabase||!SUPABASE_URL.startsWith('https://')||SUPABASE_PUBLISHABLE_KEY.startsWith('COLE_')){
+   ld.style.display='none';showAuth('Antes de usar, configure SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY no arquivo index.html.');return;
+  }
+  DB=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  const {data:{session},error}=await DB.auth.getSession();if(error)throw error;
+  if(!session){ld.style.display='none';showAuth();return}
+  UID=session.user.id;await pullCloud();
+  DB.auth.onAuthStateChange(async(event,sessionNow)=>{
+   if(event==='SIGNED_OUT'){UID=null;cloudReady=false;showAuth('Você saiu da sua conta.');return}
+   if(event==='SIGNED_IN'&&sessionNow&&(!cloudReady||UID!==sessionNow.user.id)){
+    UID=sessionNow.user.id;cloudReady=false;try{await pullCloud()}catch(e){console.error(e);showAuth('Erro ao carregar os dados da nuvem: '+(e.message||''))}
+   }
+  });
+ }catch(e){console.error('FLUXO initialization error:',e);showAuth('Erro ao conectar ao Supabase: '+(e.message||'Confira a URL, a chave e a tabela.'))}
+ finally{ld.style.display='none'}
+})();
+</script></body></html>
