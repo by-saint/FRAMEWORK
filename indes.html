@@ -227,8 +227,8 @@ V.historico=()=>{const S=D.sessions.slice().sort((a,b)=>b.s-a.s),T=D.tasks.filte
 A.bkg=()=>{$('#bk').value=JSON.stringify(D)};A.bkr=()=>{try{const o=JSON.parse($('#bk').value);if(!o.tasks||!o.sessions)throw 0;ask('Substituir todos os dados atuais?',()=>{D=Object.assign(blank(),o)})}catch(e){toast('Backup inválido.')}};
 /* SUPABASE CLOUD SYNC */
 // Preencha com os dados do seu projeto Supabase (Project URL e anon/public key).
-const SUPABASE_URL='COLE_AQUI_SUA_PROJECT_URL';
-const SUPABASE_PUBLISHABLE_KEY='COLE_AQUI_SUA_ANON_PUBLIC_KEY';
+const SUPABASE_URL='https://ctrtexinegmtwzgtdkjg.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_8di3rjmfyRl06aSV1b36ag_YwyyMV0v';
 let DB=null,UID=null,SY='local',tmr=null,busy=false,dirty=false,cloudReady=false;
 const SYT={local:'Configure o Supabase',sync:'Sincronizando…',ok:'☁ Salvo na nuvem',err:'⚠ Falha na sincronização'};
 function setSy(x){SY=x;const e=$('#sy');if(e)e.textContent=SYT[x]||x}
